@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- ============================================================
+       CANDY BLAST CHOCOLATES - Página web empresarial
+       Archivo único: HTML5 + CSS3 (sin librerías ni servicios externos)
+       ============================================================ -->
+  <meta charset="UTF-8">
+  <!-- Hace que la página se adapte a celulares y tabletas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Candy Blast Chocolates: bombones artesanales de alta confitería con formas geométricas, colores vibrantes y rellenos sorpresa.">
+  <title>Candy Blast Chocolates | Bombones artesanales con sorpresa</title>
+
+  <style>
+    /* ==========================================================
+       1. VARIABLES DE COLOR Y MEDIDAS
+       Se definen una sola vez y se reutilizan en todo el archivo.
+       ========================================================== */
+    :root {
+      /* Colores corporativos */
+      --rosa-chicle: #ff5fa2;
+      --rosa-suave: #ffd6e8;
+      --azul-brillante: #2f7bff;
+      --azul-texto: #1550d6;      /* Azul más oscuro para textos (mejor contraste) */
+      --morado-dulce: #8b4fd9;
+      --morado-oscuro: #2a1250;   /* Fondo oscuro y textos principales */
+      --fondo-claro: #fff7fb;
+      --blanco: #ffffff;
+
+      /* Fuentes del sistema: no necesitan descargarse */
+      --fuente-titulos: "Arial Black", "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      --fuente-texto: "Segoe UI", "Helvetica Neue", Arial, system-ui, sans-serif;
+
+      /* Medidas reutilizables */
+      --ancho-maximo: 1120px;
+      --radio-tarjeta: 20px;
+    }
+
+    /* ==========================================================
+       2. ESTILOS BASE (se aplican a toda la página)
+       ========================================================== */
+    * {
+      box-sizing: border-box; /* El padding no agranda los elementos */
+    }
+
+    html {
+      scroll-behavior: smooth;   /* Desplazamiento suave al usar el menú */
+      scroll-padding-top: 130px; /* El menú fijo no tapa los títulos */
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--fuente-texto);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--morado-oscuro);
+      background-color: var(--fondo-claro);
+    }
+
+    h1, h2, h3 {
+      font-family: var(--fuente-titulos);
+      line-height: 1.15;
+      margin: 0 0 0.6em;
+    }
+
+    h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
+    h3 { font-size: 1.25rem; }
+
+    p { margin: 0 0 1em; }
+
+    a { color: var(--azul-texto); }
+
+    /* Contorno visible al navegar con el teclado (accesibilidad) */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid var(--rosa-chicle);
+      outline-offset: 3px;
+    }
+
+    /* Contenedor que centra el contenido y limita su ancho */
+    .contenedor {
+      width: min(100% - 2.5rem, var(--ancho-maximo));
+      margin-inline: auto;
+    }
+
+    /* Espacio vertical de cada sección */
+    .seccion {
+      padding: 4.5rem 0;
+    }
+
+    .seccion-encabezado {
+      max-width: 60ch;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Enlace "Saltar al contenido" para lectores de pantalla y teclado */
+    .enlace-saltar {
+      position: absolute;
+      left: 1rem;
+      top: -4rem;
+      background: var(--rosa-chicle);
+      color: var(--morado-oscuro);
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 700;
+      z-index: 100;
+    }
+    .enlace-saltar:focus { top: 1rem; }
+
+    /* ==========================================================
+       3. BOTONES
+       ========================================================== */
+    .boton {
+      display: inline-block;
+      padding: 0.85rem 1.7rem;
+      border: 3px solid transparent;
+      border-radius: 999px;
+      font-family: var(--fuente-texto);
+      font-size: 1rem;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .boton:hover { transform: translateY(-2px); }
+
+    .boton-principal {
+      background-color: var(--rosa-chicle);
+      color: var(--morado-oscuro);
+    }
+    .boton-principal:hover { background-color: #ff7ab3; }
+
+    .boton-secundario {
+      background-color: transparent;
+      color: var(--blanco);
+      border-color: var(--blanco);
+    }
+    .boton-secundario:hover { background-color: rgba(255, 255, 255, 0.15); }
+
+    /* ==========================================================
+       4. ENCABEZADO Y MENÚ DE NAVEGACIÓN
+       ========================================================== */
+    .encabezado {
+      position: sticky;   /* Se queda arriba al hacer scroll */
+      top: 0;
+      z-index: 50;
+      background-color: var(--morado-oscuro);
+      border-bottom: 4px solid var(--rosa-chicle);
+    }
+
+    .encabezado-contenido {
+      display: flex;
+      flex-wrap: wrap;           /* En pantallas pequeñas el menú baja */
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem 1.5rem;
+      padding: 0.8rem 0;
+    }
+
+    .logotipo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--blanco);
+      text-decoration: none;
+      font-family: var(--fuente-titulos);
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+    .logotipo small {
+      display: block;
+      margin-top: 0.25rem;
+      font-family: var(--fuente-texto);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--rosa-suave);
+    }
+    .logotipo svg { width: 44px; height: 44px; flex-shrink: 0; }
+
+    .menu-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .menu-lista a {
+      display: block;
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      color: var(--blanco);
+      font-weight: 700;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+    }
+    .menu-lista a:hover { background-color: var(--morado-dulce); }
+
+    .menu-lista a.menu-destacado {
+      background-color: var(--rosa-chicle);
+      color: var(--morado-oscuro);
+    }
+    .menu-lista a.menu-destacado:hover { background-color: #ff7ab3; }
+
+    /* ==========================================================
+       5. FORMAS DE LOS BOMBONES (hechas solo con CSS)
+       .bombon-marco  -> da sombra y movimiento
+       .bombon        -> la forma y el color
+       ========================================================== */
+    .bombon-marco {
+      display: inline-block;
+      filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.3));
+      animation: flotar 4s ease-in-out infinite;
+    }
+
+    .bombon {
+      position: relative;
+      width: 110px;
+      height: 110px;
+    }
+
+    /* Brillo del bombón: un destello blanco en la esquina */
+    .bombon::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 24%,
+                  rgba(255, 255, 255, 0.85) 0,
+                  rgba(255, 255, 255, 0) 38%);
+    }
+
+    /* Formas geométricas */
+    .forma-cuadrado  { border-radius: 24px; }
+    .forma-circulo   { border-radius: 50%; }
+    .forma-hexagono  { clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%); }
+    .forma-diamante  { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+    .forma-triangulo { clip-path: polygon(50% 6%, 96% 92%, 4% 92%); }
+    .forma-estrella  { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+
+    /* Colores de cada bombón */
+    .color-rosa    { background: linear-gradient(145deg, #ff9cc8, var(--rosa-chicle) 55%, #d6307f); }
+    .color-azul    { background: linear-gradient(145deg, #86b3ff, var(--azul-brillante) 55%, #1346c0); }
+    .color-morado  { background: linear-gradient(145deg, #c7a2f5, var(--morado-dulce) 55%, #5b2a9c); }
+
+    /* Animación suave de "flotar" */
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    /* Cada bombón se mueve en un momento distinto */
+    .retraso-1 { animation-delay: 0.4s; }
+    .retraso-2 { animation-delay: 0.9s; }
+    .retraso-3 { animation-delay: 1.4s; }
+
+    /* Respeta a las personas que desactivan las animaciones en su sistema */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .bombon-marco { animation: none; }
+      .boton { transition: none; }
+    }
+
+    /* ==========================================================
+       6. SECCIÓN DE INICIO (HERO)
+       ========================================================== */
+    .inicio {
+      background-color: var(--morado-oscuro);
+      /* Puntos como una pantalla de videojuego retro */
+      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 2px, transparent 2px);
+      background-size: 28px 28px;
+      color: var(--blanco);
+      padding: 4rem 0 5rem;
+    }
+
+    .inicio-contenido {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .inicio h1 {
+      font-size: clamp(2.3rem, 6vw, 4rem);
+      margin-bottom: 0.4em;
+    }
+
+    /* Color de la palabra destacada del título */
+    .texto-rosa { color: var(--rosa-chicle); }
+
+    .inicio p {
+      max-width: 48ch;
+      font-size: 1.15rem;
+      color: #f1e6ff;
+    }
+
+    .inicio-botones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.8rem;
+    }
+
+    /* Tablero con los bombones, como un nivel de videojuego */
+    .tablero {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      justify-items: center;
+      align-items: center;
+      gap: 1.2rem 0.5rem;
+      padding: 2.5rem 1rem;
+      background-color: rgba(139, 79, 217, 0.35);
+      border: 4px solid var(--morado-dulce);
+      border-radius: 28px;
+    }
+
+    .tablero-etiqueta {
+      position: absolute;
+      top: -18px;
+      right: 20px;
+      padding: 0.35rem 1rem;
+      background-color: var(--azul-brillante);
+      color: var(--blanco);
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      transform: rotate(4deg);
+    }
+    .tablero-etiqueta { background-color: var(--azul-texto); }
+
+    /* ==========================================================
+       7. SECCIÓN NOSOTROS
+       ========================================================== */
+    .nosotros-contenido {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .datos-lista {
+      display: grid;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .dato {
+      padding: 1.1rem 1.4rem;
+      background-color: var(--blanco);
+      border-left: 8px solid var(--rosa-chicle);
+      border-radius: 0 var(--radio-tarjeta) var(--radio-tarjeta) 0;
+      box-shadow: 0 4px 14px rgba(42, 18, 80, 0.1);
+    }
+    .dato:nth-child(2) { border-left-color: var(--azul-brillante); }
+    .dato:nth-child(3) { border-left-color: var(--morado-dulce); }
+    .dato strong { display: block; font-family: var(--fuente-titulos); font-size: 1.05rem; }
+
+    /* ==========================================================
+       8. SECCIÓN PRODUCTOS (tarjetas)
+       ========================================================== */
+    .productos { background-color: var(--rosa-suave); }
+
+    .productos-cuadricula {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.6rem;
+    }
+
+    .tarjeta-producto {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: var(--blanco);
+      border-radius: var(--radio-tarjeta);
+      box-shadow: 0 6px 18px rgba(42, 18, 80, 0.15);
+    }
+
+    /* Zona de color donde se muestra el bombón */
+    .tarjeta-vitrina {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.8rem 1rem;
+      background-color: var(--morado-oscuro);
+    }
+
+    .tarjeta-cuerpo {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      padding: 1.4rem;
+    }
+    .tarjeta-cuerpo p { margin-bottom: 0.8rem; }
+
+    .relleno {
+      margin-top: auto; /* Empuja el relleno al final de la tarjeta */
+      padding-top: 0.8rem;
+      border-top: 2px dashed var(--rosa-suave);
+      font-size: 0.95rem;
+    }
+
+    /* Medidor de acidez estilo "barra de vida" de videojuego */
+    .nivel {
+      display: inline-flex;
+      gap: 4px;
+      vertical-align: middle;
+      margin-left: 0.4rem;
+    }
+    .nivel i {
+      width: 16px;
+      height: 10px;
+      border: 2px solid var(--morado-dulce);
+      border-radius: 3px;
+    }
+    .nivel i.lleno { background-color: var(--rosa-chicle); border-color: var(--rosa-chicle); }
+
+    /* ==========================================================
+       9. SECCIÓN VENTAJAS
+       ========================================================== */
+    .ventajas-cuadricula {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4rem;
+    }
+
+    .tarjeta-ventaja {
+      padding: 1.6rem;
+      background-color: var(--blanco);
+      border: 3px solid var(--morado-oscuro);
+      border-radius: var(--radio-tarjeta);
+      box-shadow: 6px 6px 0 var(--morado-dulce);
+    }
+
+    .icono-circulo {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      background-color: var(--morado-dulce);
+      color: var(--blanco);
+    }
+    .tarjeta-ventaja:nth-child(2) .icono-circulo { background-color: var(--azul-texto); }
+    .tarjeta-ventaja:nth-child(3) .icono-circulo { background-color: #c21f6e; }
+    .tarjeta-ventaja:nth-child(4) .icono-circulo { background-color: var(--morado-oscuro); }
+
+    /* Estilo común de todos los iconos SVG */
+    .icono {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ==========================================================
+       10. SECCIÓN CONTACTO
+       ========================================================== */
+    .contacto { background-color: var(--morado-oscuro); color: var(--blanco); }
+    .contacto a { color: var(--rosa-suave); }
+
+    .contacto-contenido {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .contacto-lista {
+      display: grid;
+      gap: 1.2rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .contacto-lista li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .contacto-lista .icono {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      border-radius: 50%;
+      background-color: var(--rosa-chicle);
+      color: var(--morado-oscuro);
+    }
+
+    /* Formulario */
+    .formulario {
+      padding: 1.8rem;
+      background-color: var(--blanco);
+      color: var(--morado-oscuro);
+      border-radius: var(--radio-tarjeta);
+    }
+
+    .aviso-demo {
+      margin-bottom: 1.2rem;
+      padding: 0.8rem 1rem;
+      background-color: var(--rosa-suave);
+      border-left: 6px solid var(--rosa-chicle);
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .campo { margin-bottom: 1rem; }
+    .campo label { display: block; margin-bottom: 0.3rem; font-weight: 700; }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 2px solid var(--morado-dulce);
+      border-radius: 10px;
+      font-family: var(--fuente-texto);
+      font-size: 1rem;
+      color: var(--morado-oscuro);
+      background-color: var(--blanco);
+    }
+    .campo textarea { min-height: 120px; resize: vertical; }
+
+    /* Mensaje que aparece al pulsar "Enviar" (solo demostración) */
+    .mensaje-demo {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.8rem 1rem;
+      background-color: #e3ecff;
+      border-left: 6px solid var(--azul-texto);
+      border-radius: 8px;
+    }
+    .mensaje-demo:target { display: block; }
+
+    /* ==========================================================
+       11. PIE DE PÁGINA
+       ========================================================== */
+    .pie {
+      padding: 2rem 0;
+      background-color: #1c0b38;
+      color: #e8dcf7;
+      text-align: center;
+      border-top: 4px solid var(--rosa-chicle);
+    }
+    .pie a { color: var(--rosa-suave); }
+    .pie-enlaces {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 1.5rem;
+      margin: 0 0 1rem;
+      padding: 0;
+      list-style: none;
+    }
+    .pie p { margin: 0; font-size: 0.9rem; }
+
+    /* ==========================================================
+       12. DISEÑO ADAPTABLE (RESPONSIVE)
+       Cambia la distribución según el ancho de la pantalla.
+       ========================================================== */
+
+    /* Tabletas */
+    @media (max-width: 960px) {
+      .inicio-contenido,
+      .nosotros-contenido,
+      .contacto-contenido { grid-template-columns: 1fr; }
+
+      .productos-cuadricula { grid-template-columns: repeat(2, 1fr); }
+      .ventajas-cuadricula  { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Celulares */
+    @media (max-width: 600px) {
+      html { scroll-padding-top: 160px; }
+      .seccion { padding: 3rem 0; }
+      .encabezado-contenido { justify-content: center; }
+      .menu-lista { justify-content: center; }
+
+      .productos-cuadricula,
+      .ventajas-cuadricula { grid-template-columns: 1fr; }
+
+      .bombon { width: 84px; height: 84px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Enlace para saltar directamente al contenido principal -->
+  <a class="enlace-saltar" href="#contenido-principal">Saltar al contenido</a>
+
+  <!-- ======================= ENCABEZADO ======================= -->
+  <header class="encabezado">
+    <div class="contenedor encabezado-contenido">
+
+      <!-- Logotipo: hexágono dibujado con SVG + nombre de la empresa -->
+      <a class="logotipo" href="#inicio" aria-label="Candy Blast Chocolates, ir al inicio">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <polygon points="12,4 36,4 46,24 36,44 12,44 2,24" fill="#ff5fa2"/>
+          <polygon points="16,11 32,11 39,24 32,37 16,37 9,24" fill="#8b4fd9"/>
+          <polygon points="24,13 27,21 35,21 29,26 31,34 24,29 17,34 19,26 13,21 21,21" fill="#2f7bff"/>
+        </svg>
+        <span>Candy Blast<small>Chocolates</small></span>
+      </a>
+
+      <!-- Menú de navegación principal -->
+      <nav aria-label="Menú principal">
+        <ul class="menu-lista">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#productos">Productos</a></li>
+          <li><a href="#ventajas">Ventajas</a></li>
+          <li><a class="menu-destacado" href="#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido-principal">
+
+    <!-- ======================= INICIO ======================= -->
+    <section class="inicio" id="inicio" aria-labelledby="titulo-inicio">
+      <div class="contenedor inicio-contenido">
+
+        <div>
+          <h1 id="titulo-inicio">Bombones que <span class="texto-rosa">explotan</span> de sabor</h1>
+          <p>
+            Chocolates artesanales de alta confitería con formas geométricas,
+            colores brillantes y un relleno sorpresa en cada bocado.
+            Perfectos para regalar o para subir de nivel tu descanso.
+          </p>
+          <div class="inicio-botones">
+            <a class="boton boton-principal" href="#productos">Ver los bombones</a>
+            <a class="boton boton-secundario" href="#contacto">Pedir un regalo</a>
+          </div>
+        </div>
+
+        <!-- Tablero decorativo con 6 bombones (la imagen lleva etiqueta para lectores de pantalla) -->
+        <div class="tablero" role="img" aria-label="Seis bombones de colores con formas geométricas: cuadrado, hexágono, diamante, círculo, triángulo y estrella">
+          <span class="tablero-etiqueta" aria-hidden="true">¡Nivel sorpresa!</span>
+
+          <div class="bombon-marco"><div class="bombon forma-cuadrado color-rosa"></div></div>
+          <div class="bombon-marco retraso-1"><div class="bombon forma-hexagono color-azul"></div></div>
+          <div class="bombon-marco retraso-2"><div class="bombon forma-diamante color-morado"></div></div>
+          <div class="bombon-marco retraso-3"><div class="bombon forma-circulo color-azul"></div></div>
+          <div class="bombon-marco retraso-2"><div class="bombon forma-triangulo color-rosa"></div></div>
+          <div class="bombon-marco retraso-1"><div class="bombon forma-estrella color-morado"></div></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================= NOSOTROS ======================= -->
+    <section class="seccion nosotros" id="nosotros" aria-labelledby="titulo-nosotros">
+      <div class="contenedor nosotros-contenido">
+
+        <div>
+          <h2 id="titulo-nosotros">Chocolate hecho a mano, con mentalidad de jugador</h2>
+          <p>
+            En Candy Blast Chocolates elaboramos bombones artesanales de alta confitería.
+            Cada pieza se moldea con una forma geométrica, se tiñe con colores vibrantes
+            y se rellena con algo que nadie espera: caramelo efervescente, frutas ácidas
+            y otras sorpresas.
+          </p>
+          <p>
+            Nos inspiramos en los videojuegos y en la alegría de regalar. Creamos cajas
+            para quienes quieren un detalle original, colorido y diferente a los chocolates de siempre.
+          </p>
+        </div>
+
+        <ul class="datos-lista">
+          <li class="dato"><strong>Formas geométricas</strong> Cuadrados, hexágonos, diamantes, estrellas y más.</li>
+          <li class="dato"><strong>Relleno sorpresa</strong> Se siente el chispazo antes de reconocer el sabor.</li>
+          <li class="dato"><strong>Hecho en lotes pequeños</strong> Cada bombón se termina a mano, uno por uno.</li>
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- ======================= PRODUCTOS ======================= -->
+    <section class="seccion productos" id="productos" aria-labelledby="titulo-productos">
+      <div class="contenedor">
+
+        <div class="seccion-encabezado">
+          <h2 id="titulo-productos">Elige tu bombón</h2>
+          <p>Seis formas, seis rellenos. Cada tarjeta indica su nivel de acidez, del 1 (suave) al 5 (¡a tope!).</p>
+        </div>
+
+        <div class="productos-cuadricula">
+
+          <!-- Producto 1 -->
+          <article class="tarjeta-producto">
+            <div class="tarjeta-vitrina" aria-hidden="true">
+              <div class="bombon-marco"><div class="bombon forma-cuadrado color-rosa"></div></div>
+            </div>
+            <div class="tarjeta-cuerpo">
+              <h3>Pixel Pop</h3>
+              <p>Bombón cuadrado de chocolate con leche y corazón de caramelo efervescente que chisporrotea al morderlo.</p>
+              <p class="relleno">
+                <strong>Relleno:</strong> caramelo efervescente.<br>
+                Acidez:
+                <span class="nivel" role="img" aria-label="Nivel de acidez 1 de 5">
+                  <i class="lleno"></i><i></i><i></i><i></i><i></i>
+                </span>
+              </p>
+            </div>
+          </article>
+
+          <!-- Producto 2 -->
+          <article class="tarjeta-producto">
+            <div class="tarjeta-vitrina" aria-hidden="true">
+              <div class="bombon-marco retraso-1"><div class="bombon forma-hexagono color-azul"></div></div>
+            </div>
+            <div class="tarjeta-cuerpo">
+              <h3>Hexa Zap</h3>
+              <p>Hexágono azul brillante con chocolate blanco y una gelatina de frambuesa ácida que despierta el paladar.</p>
+              <p class="relleno">
+                <strong>Relleno:</strong> frambuesa ácida.<br>
+                Acidez:
+                <span class="nivel" role="img" aria-label="Nivel de acidez 4 de 5">
+                  <i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i></i>
+                </span>
+              </p>
+            </div>
+          </article>
+
+          <!-- Producto 3 -->
+          <article class="tarjeta-producto">
+            <div class="tarjeta-vitrina" aria-hidden="true">
+              <div class="bombon-marco retraso-2"><div class="bombon forma-diamante color-morado"></div></div>
+            </div>
+            <div class="tarjeta-cuerpo">
+              <h3>Diamante Combo</h3>
+              <p>Diamante morado de chocolate oscuro con crema de maracuyá y un toque cítrico final.</p>
+              <p class="relleno">
+                <strong>Relleno:</strong> maracuyá ácido.<br>
+                Acidez:
+                <span class="nivel" role="img" aria-label="Nivel de acidez 3 de 5">
+                  <i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i></i><i></i>
+                </span>
+              </p>
+            </div>
+          </article>
+
+          <!-- Producto 4 -->
+          <article class="tarjeta-producto">
+            <div class="tarjeta-vitrina" aria-hidden="true">
+              <div class="bombon-marco retraso-3"><div class="bombon forma-circulo color-azul"></div></div>
+            </div>
+            <div class="tarjeta-cuerpo">
+              <h3>Orbe Cereza</h3>
+              <p>Esfera azul con chocolate con leche, cereza ácida confitada y granos de caramelo que estallan.</p>
+              <p class="relleno">
+                <strong>Relleno:</strong> cereza ácida y efervescente.<br>
+                Acidez:
+                <span class="nivel" role="img" aria-label="Nivel de acidez 3 de 5">
+                  <i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i></i><i></i>
+                </span>
+              </p>
+            </div>
+          </article>
+
+          <!-- Producto 5 -->
+          <article class="tarjeta-producto">
+            <div class="tarjeta-vitrina" aria-hidden="true">
+              <div class="bombon-marco retraso-2"><div class="bombon forma-triangulo color-rosa"></div></div>
+            </div>
+            <div class="tarjeta-cuerpo">
+              <h3>Power-Up Limón</h3>
+              <p>Triángulo rosa de chocolate blanco con un centro de limón muy ácido. Solo para jugadores valientes.</p>
+              <p class="relleno">
+                <strong>Relleno:</strong> limón ácido.<br>
+                Acidez:
+                <span class="nivel" role="img" aria-label="Nivel de acidez 5 de 5">
+                  <i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i class="lleno"></i>
+                </span>
+              </p>
+            </div>
+          </article>
+
+          <!-- Producto 6 -->
+          <article class="tarjeta-producto">
+            <div class="tarjeta-vitrina" aria-hidden="true">
+              <div class="bombon-marco retraso-1"><div class="bombon forma-estrella color-morado"></div></div>
+            </div>
+            <div class="tarjeta-cuerpo">
+              <h3>Estrella Bonus</h3>
+              <p>Estrella morada de chocolate oscuro con mora ácida y un golpe final de caramelo efervescente.</p>
+              <p class="relleno">
+                <strong>Relleno:</strong> mora ácida y efervescente.<br>
+                Acidez:
+                <span class="nivel" role="img" aria-label="Nivel de acidez 4 de 5">
+                  <i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i class="lleno"></i><i></i>
+                </span>
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= VENTAJAS ======================= -->
+    <section class="seccion ventajas" id="ventajas" aria-labelledby="titulo-ventajas">
+      <div class="contenedor">
+
+        <div class="seccion-encabezado">
+          <h2 id="titulo-ventajas">Por qué elegirnos</h2>
+          <p>Lo que hace diferentes a nuestros bombones frente a una caja de chocolates común.</p>
+        </div>
+
+        <div class="ventajas-cuadricula">
+
+          <article class="tarjeta-ventaja">
+            <div class="icono-circulo">
+              <!-- Icono de rayo -->
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+            </div>
+            <h3>Sorpresa en cada bocado</h3>
+            <p>Rellenos efervescentes y ácidos que no encontrarás en una bombonería tradicional.</p>
+          </article>
+
+          <article class="tarjeta-ventaja">
+            <div class="icono-circulo">
+              <!-- Icono de corazón -->
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.6-9.5 9-9.5 9z"/></svg>
+            </div>
+            <h3>Artesanal de verdad</h3>
+            <p>Cada bombón se moldea, decora y empaca a mano en lotes pequeños.</p>
+          </article>
+
+          <article class="tarjeta-ventaja">
+            <div class="icono-circulo">
+              <!-- Icono de regalo -->
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 13h18M12 8c-2-4-6-4-6-1.5S10 8 12 8zm0 0c2-4 6-4 6-1.5S14 8 12 8z"/></svg>
+            </div>
+            <h3>Regalo con personalidad</h3>
+            <p>Cajas coloridas para cumpleaños, celebraciones y detalles para quienes aman los videojuegos.</p>
+          </article>
+
+          <article class="tarjeta-ventaja">
+            <div class="icono-circulo">
+              <!-- Icono de escudo con check -->
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+            </div>
+            <h3>Calidad de alta confitería</h3>
+            <p>Ingredientes seleccionados y un acabado brillante que se nota desde la primera mirada.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= CONTACTO ======================= -->
+    <section class="seccion contacto" id="contacto" aria-labelledby="titulo-contacto">
+      <div class="contenedor contacto-contenido">
+
+        <div>
+          <h2 id="titulo-contacto">Hablemos de tu próximo regalo</h2>
+          <p>¿Quieres una caja personalizada o un pedido para un evento? Escríbenos.</p>
+
+          <!-- Datos de ejemplo: no son reales -->
+          <ul class="contacto-lista">
+            <li>
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              <div><strong>Correo</strong><br>hola@candyblast.example</div>
+            </li>
+            <li>
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+              <div><strong>Teléfono</strong><br>+00 000 000 0000</div>
+            </li>
+            <li>
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <div><strong>Dirección</strong><br>Calle Ejemplo 123, Ciudad Ficticia</div>
+            </li>
+            <li>
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <div><strong>Horario</strong><br>Lunes a sábado, de 10:00 a. m. a 7:00 p. m.</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Formulario DEMOSTRATIVO: no envía datos a ningún lugar -->
+        <div class="formulario">
+          <p class="aviso-demo">
+            <strong>Formulario demostrativo.</strong>
+            No envía información a ningún servidor. Para recibir mensajes reales
+            hay que conectarlo a un servicio de correo o a un servidor.
+          </p>
+
+          <form action="#mensaje-demo" method="get">
+            <div class="campo">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+            </div>
+
+            <div class="campo">
+              <label for="correo">Correo electrónico</label>
+              <input type="email" id="correo" name="correo" autocomplete="email" required>
+            </div>
+
+            <div class="campo">
+              <label for="motivo">Motivo de tu mensaje</label>
+              <select id="motivo" name="motivo">
+                <option>Quiero una caja personalizada</option>
+                <option>Pedido para un evento</option>
+                <option>Tengo una pregunta</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="mensaje">Mensaje</label>
+              <textarea id="mensaje" name="mensaje" required></textarea>
+            </div>
+
+            <button class="boton boton-principal" type="submit">Enviar mensaje</button>
+          </form>
+
+          <!-- Se muestra solo cuando el enlace termina en #mensaje-demo -->
+          <p class="mensaje-demo" id="mensaje-demo" role="status">
+            Esto es una demostración: tu mensaje no fue enviado.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================= PIE DE PÁGINA ======================= -->
+  <footer class="pie">
+    <div class="contenedor">
+      <ul class="pie-enlaces">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#productos">Productos</a></li>
+        <li><a href="#ventajas">Ventajas</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+      <p>&copy; 2026 Candy Blast Chocolates. Sitio de ejemplo con datos ficticios.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
